@@ -60,7 +60,8 @@ The goal is to provide a comprehensive overview of privacy considerations, align
 
 --- middle
 
-# Introduction
+# Hey Diana!
+# Introduction 
 
 The democratization of technology has led to a surge of new entrants in the growing market of personal data management.
 These entrants, driven by various motives ranging from commerce and regulation to fraud prevention and charitable causes, are increasingly engaging with conversational data across network boundaries.
