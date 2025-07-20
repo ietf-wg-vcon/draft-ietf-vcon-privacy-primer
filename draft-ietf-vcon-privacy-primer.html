@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Privacy Primer for vCon Developers</title>
+<meta content="Diana James" name="author">
+<meta content="Thomas McCarthy-Howe" name="author">
+<meta content="
+       This document serves as a primer for technical professionals involved in the processing (which includes collecting, using, disclosure, and erasure) of personal data, including not only basic identifiers like name, age, and address, but also sensitive data contained in communications, including biometrics obtained from audio and video recordings.
+It outlines key concepts in data privacy and communications privacy, addressing the ethical and legal considerations surrounding the collection, processing, sharing, access, retention, and disclosure of individuals’ data.
+The document covers fundamental privacy principles, defines important roles in data processing, and explains individuals’ rights regarding their personal information.
+It also discusses the scope of protected personal information, including sensitive data categories, and explores techniques like data aggregation and anonymization.
+While referencing existing IETF work on privacy in Internet communications, this draft extends beyond to address individuals' data privacy in relation to organizations handling such data.
+The goal is to provide a comprehensive overview of privacy considerations, aligning with fair information practices and current regulatory frameworks, to guide professionals in implementing privacy-respecting data management practices. 
+    " name="description">
+<meta content="xml2rfc 3.30.0" name="generator">
+<meta content="vcon" name="keyword">
+<meta content="privacy" name="keyword">
+<meta content="sparkling distributed ledger" name="keyword">
+<meta content="draft-ietf-vcon-privacy-primer-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.30.0
+    Python 3.12.11
+    ConfigArgParse 1.7
+    google-i18n-address 3.1.1
+    intervaltree 3.1.0
+    Jinja2 3.1.6
+    lxml 5.3.1
+    platformdirs 4.3.8
+    pycountry 24.6.1
+    PyYAML 6.0.2
+    requests 2.32.4
+    setuptools 80.9.0
+    wcwidth 0.2.13
+-->
+<link href="draft-ietf-vcon-privacy-primer.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+section {
+  clear: both;
+}
+.section-number {
+  padding-right: 0.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 680;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+  & :is(ol, ul) {
+    margin-left: 1em;
+  }
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+  & li {
+    margin-top: 0.5em;
+  }
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  margin: 0 0 0 2em;
+  & li {
+    margin: 0;
+    & :first-child { margin-top: 0; }
+    & :last-child { margin-bottom: 0; }
+  }
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+  &.olPercent {
+    --indent: 5ch;
+    & > dt {
+      min-width: calc(var(--indent) - 2ch);
+    }
+  }
+  &.olPercent > dt {
+    float: none;
+  }
+
+  dl > dd > & {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+  }
+}
+dl:not(.dlNewline) > dt {
+  float: left;
+  margin-right: 2ch;
+  min-width: 8ch;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+  & > :is(:first-child, .break:first-child + *) {
+    margin-top: 0;
+  }
+  & > :is(:last-child) {
+    margin-bottom: 0;
+  }
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href].selfRef, .iref + a[href].internal {
+  color: var(--text-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+  caption-side: bottom;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+  &[href] {
+    color: var(--pilcrow-weak);
+    &:hover { text-decoration: none; }
+  }
+}
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+  & dt {
+    width: var(--identifier-width);
+    min-width: var(--identifier-width);
+    clear: left;
+    float: left;
+    text-align: right;
+    margin-right: 1ch;
+  }
+  & dd {
+    margin: 0;
+    margin-left: calc(1em + var(--identifier-width)) !important;
+    min-width: 5em;
+  }
+  & .authors {
+    & .author {
+      display: inline-block;
+      margin-right: 1.5em;
+    }
+    & .org {
+      font-style: italic;
+    }
+  }
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+
+  & nav {
+    & ul {
+      margin: 0 0.5em 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      line-height: 1.3em;
+      margin: 2px 0;
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+    }
+  }
+  & a.xref {
+    white-space: normal;
+  }
+}
+
+.references {
+  & > dt {
+    text-align: right;
+    font-weight: bold;
+    min-width: 10ch;
+    margin-right: 1.5ch;
+    &:target::before {
+      content: "⇒";
+      margin: 0 10px 0 -25px;
+    }
+  }
+  & > dd {
+    margin-left: 12ch !important;
+    overflow: visible;
+    & .refInstance {
+      margin-bottom: 0.8em;
+    }
+    & .ascii {
+      margin-bottom: 0.25em;
+    }
+  }
+}
+
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  max-width: 20em;
+  margin: 1em auto 1em 0;
+
+  & .nameRole {
+    font-weight: 700;
+    margin-left: 0;
+  }
+  & .label {
+    margin: 0.5em 0;
+  }
+  & .type {
+    display: none;
+  }
+  & .alternative-contact {
+    margin: 0.5em 0 0.25em 0;
+  }
+  & .non-ascii {
+    margin: 0 0 0 2em;
+  }
+  & div.left {
+    text-align: left;
+  }
+  & div.right {
+    text-align: right;
+  }
+}
+
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+/* Comments */
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+
+@media screen {
+  #toc nav {
+    font-family: var(--font-title);
+    font-weight: 360;
+    & > ul { margin-bottom: 2em; }
+    & ul {
+      margin: 0 0 0 4px;
+      & :is(p, li) {
+        margin: 2px 0;
+      }
+    }
+  }
+  #toc a.toplink {
+    float: right;
+  }
+}
+@media not screen {
+  #toc a.toplink {
+    display: none;
+  }
+}
+
+
+/* TOC layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+    &::before { /* css hamburger */
+      float: right;
+      position: relative;
+      width: 1em;
+      height: 1px;
+      left: -164px;
+      margin: 8px 0 0 0;
+      background: white none repeat scroll 0 0;
+      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+      content: "";
+    }
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active {
+    opacity: 1;
+    & nav { display: block; }
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:is(:link, :focus, :hover),
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin: 2px 0.5em 0;
+  }
+}
+
+/* TOC layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+  #toc a.toplink {
+    margin: 8px 0.5em 0;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([fill="white"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">privacy primer</td>
+<td class="right">July 2025</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">James &amp; McCarthy-Howe</td>
+<td class="center">Expires 21 January 2026</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Network Working Group</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-vcon-privacy-primer-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2025-07-20" class="published">20 July 2025</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Informational</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2026-01-21">21 January 2026</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">D. James</div>
+<div class="org">Marashlian &amp; Donahue, PLLC</div>
+</div>
+<div class="author">
+      <div class="author-name">T. McCarthy-Howe</div>
+<div class="org">Strolid</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Privacy Primer for vCon Developers</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document serves as a primer for technical professionals involved in the processing (which includes collecting, using, disclosure, and erasure) of personal data, including not only basic identifiers like name, age, and address, but also sensitive data contained in communications, including biometrics obtained from audio and video recordings.
+It outlines key concepts in data privacy and communications privacy, addressing the ethical and legal considerations surrounding the collection, processing, sharing, access, retention, and disclosure of individuals’ data.
+The document covers fundamental privacy principles, defines important roles in data processing, and explains individuals’ rights regarding their personal information.
+It also discusses the scope of protected personal information, including sensitive data categories, and explores techniques like data aggregation and anonymization.
+While referencing existing IETF work on privacy in Internet communications, this draft extends beyond to address individuals' data privacy in relation to organizations handling such data.
+The goal is to provide a comprehensive overview of privacy considerations, aligning with fair information practices and current regulatory frameworks, to guide professionals in implementing privacy-respecting data management practices.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        The latest revision of this draft can be found at <span><a href="https://ietf-wg-vcon.github.io/draft-ietf-vcon-privacy-primer/draft-ietf-vcon-privacy-primer.html">https://ietf-wg-vcon.github.io/draft-ietf-vcon-privacy-primer/draft-ietf-vcon-privacy-primer.html</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-ietf-vcon-privacy-primer/">https://datatracker.ietf.org/doc/draft-ietf-vcon-privacy-primer/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">
+        Discussion of this document takes place on the
+        Virtualized Conversations Working Group mailing list (<span><a href="mailto:vcon@ietf.org">mailto:vcon@ietf.org</a></span>),
+        which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/vcon/">https://mailarchive.ietf.org/arch/browse/vcon/</a></span>.
+        Subscribe at <span><a href="https://www.ietf.org/mailman/listinfo/vcon/">https://www.ietf.org/mailman/listinfo/vcon/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+<p id="section-note.1-4">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/ietf-wg-vcon/draft-ietf-vcon-privacy-primer">https://github.com/ietf-wg-vcon/draft-ietf-vcon-privacy-primer</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 21 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2025 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-purpose-of-this-document" class="internal xref">Purpose of this Document</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-intended-audience" class="internal xref">Intended Audience</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3">
+                <p id="section-toc.1-1.1.2.3.1" class="keepWithNext"><a href="#section-1.3" class="auto internal xref">1.3</a>.  <a href="#name-goals-of-this-document" class="internal xref">Goals of this Document</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-privacy-and-vcon-in-general" class="internal xref">Privacy and vCon – In General</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-data-privacy" class="internal xref">Data privacy</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2.2.1">
+                    <p id="section-toc.1-1.2.2.2.2.1.1"><a href="#section-2.2.1" class="auto internal xref">2.2.1</a>.  <a href="#name-key-roles-in-data-processin" class="internal xref">Key Roles in Data Processing</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2.2.2">
+                    <p id="section-toc.1-1.2.2.2.2.2.1"><a href="#section-2.2.2" class="auto internal xref">2.2.2</a>.  <a href="#name-what-data-rights-do-data-su" class="internal xref">What Data Rights do Data Subjects Have?</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2.2.3">
+                    <p id="section-toc.1-1.2.2.2.2.3.1"><a href="#section-2.2.3" class="auto internal xref">2.2.3</a>.  <a href="#name-what-data-is-protected" class="internal xref">What Data Is Protected?</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2.2.4">
+                    <p id="section-toc.1-1.2.2.2.2.4.1"><a href="#section-2.2.4" class="auto internal xref">2.2.4</a>.  <a href="#name-sensitive-data" class="internal xref">Sensitive Data</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2.2.5">
+                    <p id="section-toc.1-1.2.2.2.2.5.1"><a href="#section-2.2.5" class="auto internal xref">2.2.5</a>.  <a href="#name-what-data-is-not-protected" class="internal xref">What Data Is Not Protected?</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2.2.6">
+                    <p id="section-toc.1-1.2.2.2.2.6.1"><a href="#section-2.2.6" class="auto internal xref">2.2.6</a>.  <a href="#name-deidentification-anonymizat" class="internal xref">Deidentification/Anonymization</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2.2.7">
+                    <p id="section-toc.1-1.2.2.2.2.7.1"><a href="#section-2.2.7" class="auto internal xref">2.2.7</a>.  <a href="#name-aggregation-anonymization" class="internal xref">Aggregation/Anonymization</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-communications-privacy" class="internal xref">Communications Privacy</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4">
+                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="auto internal xref">2.4</a>.  <a href="#name-key-privacy-principles" class="internal xref">Key Privacy Principles</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.5">
+                <p id="section-toc.1-1.2.2.5.1"><a href="#section-2.5" class="auto internal xref">2.5</a>.  <a href="#name-artificial-intelligence-spe" class="internal xref">Artificial Intelligence-Specific Considerations</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">The democratization of technology has led to a surge of new entrants in the growing market of personal data management.
+These entrants, driven by various motives ranging from commerce and regulation to fraud prevention and charitable causes, are increasingly engaging with conversational data across network boundaries.
+The vCon (Virtual Conversation) represents a significant step forward in this landscape, enabling the processing and ethical sharing of conversational data and fostering a rich ecosystem of services based on a novel concept: genuinely listening to what customers say.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">However, many of these new entrants may not inherently understand the ethical and legal complexities surrounding crucial topics such as data minimization, legal basis for processing, redaction, the right to know, and the right to erasure.
+The design decisions behind the vCon framework directly address these concerns, incorporating features such as encryption capabilities, external data signing for change detection, and the creation of redacted versions that maintain a trail to the original data.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<div id="purpose-of-this-document">
+<section id="section-1.1">
+        <h3 id="name-purpose-of-this-document">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-purpose-of-this-document" class="section-name selfRef">Purpose of this Document</a>
+        </h3>
+<p id="section-1.1-1">This document serves as a primer for individuals and organizations grappling with the challenges of responsible management of personal data, including biometric information contained in audio and video recordings, or other sources of sensitive information, in messaging or other personal communications.
+It aims to provide a foundational understanding of key topics, explaining their importance and how they are addressed (or not) within the vCon framework.
+While the vCon is not a panacea, it offers a structure that enables well-intentioned actors to operate ethically and responsibly.
+Much like the distinction between HTTP and HTTPS, where HTTPS is trusted by default and HTTP is not, the vCon framework provides a basis for trust, with legal systems managing those who operate outside its principles.
+IETF standards already address privacy in Internet communications, including the principle of data minimization <span>[<a href="#RFC7258" class="cite xref">RFC7258</a>]</span>.
+However, those standards generally do not address the privacy of individuals' data privacy vis-à-vis organizations that collect, process, and disclose their data.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="intended-audience">
+<section id="section-1.2">
+        <h3 id="name-intended-audience">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-intended-audience" class="section-name selfRef">Intended Audience</a>
+        </h3>
+<p id="section-1.2-1">This primer is designed to cater to three primary constituencies often present in IETF discussions:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.2-2.1">
+            <p id="section-1.2-2.1.1">Technologists and Engineers: Often immersed in technical details, these professionals may benefit from understanding the broader ethical and legal considerations that should inform their designs.
+This document aims to bridge the gap between technical implementation and important "non-technical" issues they need to consider.<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.2-2.2">
+            <p id="section-1.2-2.2.1">Regulators, Lawyers, and Government Representatives: Responsible for tech policy, these individuals often approach discussions with the perspectives of their constituencies but are generally open to education.
+This document seeks to provide them with a clearer understanding of how their legal concerns are addressed within the vCon framework and what aspects fall outside its scope.<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.2-2.3">
+            <p id="section-1.2-2.3.1">Non-Governmental Organizations (NGOs): Particularly those focused on privacy, security, and human rights, these organizations represent the intersection of policy and technology.
+Often skeptical of commercial and government interests, this audience will find information on how the vCon supports personal data privacy, transparency, and control.<a href="#section-1.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="goals-of-this-document">
+<section id="section-1.3">
+        <h3 id="name-goals-of-this-document">
+<a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-goals-of-this-document" class="section-name selfRef">Goals of this Document</a>
+        </h3>
+<p id="section-1.3-1">The primary objectives of this primer are:<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.3-2.1">
+            <p id="section-1.3-2.1.1">To educate an expanding audience on the fundamental concepts of responsible customer data management.<a href="#section-1.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-2.2">
+            <p id="section-1.3-2.2.1">To foster a common understanding of the challenges involved in personal data handling.<a href="#section-1.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-2.3">
+            <p id="section-1.3-2.3.1">To provide an informed perspective on what is currently addressed by the vCon framework and what remains outside its scope.<a href="#section-1.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-2.4">
+            <p id="section-1.3-2.4.1">To encourage thoughtful consideration of ethical and legal issues in the design and implementation of systems handling personal data.<a href="#section-1.3-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-1.3-3">By achieving these goals, we aim to contribute to a more informed and responsible approach to personal data management across various sectors and disciplines.<a href="#section-1.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<div id="privacy-and-vcon-in-general">
+<section id="section-2.1">
+        <h3 id="name-privacy-and-vcon-in-general">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-privacy-and-vcon-in-general" class="section-name selfRef">Privacy and vCon – In General</a>
+        </h3>
+<p id="section-2.1-1">Privacy in general can be understood as "the right to be let alone" [Warren1890]. It may be helpful to think of it in four aspects:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.1-2">
+<li id="section-2.1-2.1">
+            <p id="section-2.1-2.1.1">personal information (or data) privacy,<a href="#section-2.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.1-2.2">
+            <p id="section-2.1-2.2.1">bodily privacy,<a href="#section-2.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.1-2.3">
+            <p id="section-2.1-2.3.1">territorial privacy, and<a href="#section-2.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.1-2.4">
+            <p id="section-2.1-2.4.1">communications privacy.<a href="#section-2.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-2.1-3">In the context of vCon, we will concentrate on <strong>data privacy</strong> and <strong>communications privacy.</strong><a href="#section-2.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="data-privacy">
+<section id="section-2.2">
+        <h3 id="name-data-privacy">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-data-privacy" class="section-name selfRef">Data privacy</a>
+        </h3>
+<p id="section-2.2-1">Data privacy, also known as information privacy or data protection, refers to the practice of safeguarding individuals' personal information from unauthorized access, use, disclosure, alteration, or destruction.
+It involves ensuring that individuals have control over their own personal data and that organizations that collect, store, and process personal data do so in a manner that respects individuals' privacy rights.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">Many countries and regions have enacted legislation to protect individuals' personal data, but their specific rules vary by jurisdiction.
+Examples of data privacy laws include the General Data Protection Regulation (GDPR) in the European Union, the Health Insurance Portability and Accountability Act (HIPAA) and California Consumer Privacy Act (CCPA) in the United States, and the Personal Data Protection Act (PDPA) in Singapore.
+The U.S. data privacy legal landscape is a particularly complex patchwork of federal and state laws. It includes comprehensive state-level data privacy acts, industry-specific federal laws, and intricate pre-emption relationships between them, creating a fragmented and multifaceted regulatory environment.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2-3">This document outlines common privacy rights and obligations as of the time of this writing in alignment with fair information practices (FIP), which are widely recognized principles but may or may not be legally required, depending on the jurisdiction.
+The framework presented here offers a general understanding of data privacy principles but does not guarantee legal compliance in any specific region.
+Readers are encouraged to seek legal or technical advice for their particular jurisdiction, industry(-ies), and situations.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+<div id="key-roles-in-data-processing">
+<section id="section-2.2.1">
+          <h4 id="name-key-roles-in-data-processin">
+<a href="#section-2.2.1" class="section-number selfRef">2.2.1. </a><a href="#name-key-roles-in-data-processin" class="section-name selfRef">Key Roles in Data Processing</a>
+          </h4>
+<p id="section-2.2.1-1">The following terms are used by the GDPR and in the privacy industry in general to define the three key roles in data processing:<a href="#section-2.2.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.2.1-2">
+<li id="section-2.2.1-2.1">
+              <p id="section-2.2.1-2.1.1"><strong>Data Subject</strong>: The individual whose personal information is being processed (also referred to as “individual" in this RFC and "consumer" in some data privacy laws).<a href="#section-2.2.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.1-2.2">
+              <p id="section-2.2.1-2.2.1"><strong>Data Controller</strong>: An organization or individual with decision-making authority over data processing who has the legal basis to process data and determines the purposes and methods of data processing, bears primary responsibility under privacy laws and is the main target of most privacy and data protection regulations.<a href="#section-2.2.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.1-2.3">
+              <p id="section-2.2.1-2.3.1"><strong>Data Processor</strong>: Often a third-party service provider who processes data on behalf of the data controller. Under HIPAA, data processors are referred to as "business associates." Data processors may be hired for specialized tasks or to improve efficiency; can subcontract to other processors, creating a chain of responsibility; must operate within the scope defined by the data controller; and are expected to maintain trust and adhere to the controller's guidelines.<a href="#section-2.2.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-2.2.1-3">The relationship between these entities forms a hierarchy of responsibility and trust.
+The data controller sets the parameters for data use, while processors at various levels must operate within these boundaries.
+This structure ensures accountability and helps maintain data privacy throughout the information processing chain.<a href="#section-2.2.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="what-data-rights-do-data-subjects-have">
+<section id="section-2.2.2">
+          <h4 id="name-what-data-rights-do-data-su">
+<a href="#section-2.2.2" class="section-number selfRef">2.2.2. </a><a href="#name-what-data-rights-do-data-su" class="section-name selfRef">What Data Rights do Data Subjects Have?</a>
+          </h4>
+<p id="section-2.2.2-1">Regarding individual rights in data privacy, organizations should focus on six key areas:<a href="#section-2.2.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.2.2-2">
+<li id="section-2.2.2-2.1">
+              <p id="section-2.2.2-2.1.1"><strong>Notice of Data Processing</strong>: Organizations must clearly communicate their privacy policies and practices. This includes explaining what personal data is collected and for which purposes, how it is used, stored, and shared, and how individuals can exercise their data privacy rights. This ensures transparency, holds data controllers accountable, and empowers individuals to make informed choices about their personal information.<a href="#section-2.2.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.2-2.2">
+              <p id="section-2.2.2-2.2.1"><strong>Consent</strong>: Organizations need to obtain data subjects' informed and freely given consent for collecting, using, storing, and sharing personal data. Different levels of consent consent may apply to different kinds of data or in different jurisdictions:<a href="#section-2.2.2-2.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2.2-2.2.2.1">
+                  <p id="section-2.2.2-2.2.2.1.1">Consent can be affirmative ("opt-in" consent) or presumed unless stated otherwise ("opt-out" consent). Opt-in consent is usually required for sensitive data and children's data (under 13 or 16 years old).<a href="#section-2.2.2-2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-2.2.2-2.2.2.2">
+                  <p id="section-2.2.2-2.2.2.2.1">Consent can be written, oral, or implied.<a href="#section-2.2.2-2.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-2.2.2-2.2.2.3">
+                  <p id="section-2.2.2-2.2.2.3.1">In some jurisdictions, such as California, consent must be sought at or before the point of data collection.
+It should also be noted that consent can be layered (i.e. provided for one function but not others) and revoked at any time by the data subject, and data controllers/processors need to act on this expediently. Consent Management is therefore a key requirement when handling personal data.<a href="#section-2.2.2-2.2.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              </ul>
+</li>
+            <li id="section-2.2.2-2.3">
+              <p id="section-2.2.2-2.3.1"><strong>Access</strong>: Organizations should offer mechanisms for individuals to access and correct their personal data. This empowers people to ensure their data is accurate and up-to-date.<a href="#section-2.2.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.2-2.4">
+              <p id="section-2.2.2-2.4.1"><strong>Data Choices</strong>: In addition to rights to access and correct, data subjects often have the following data privacy rights:<a href="#section-2.2.2-2.4.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2.2-2.4.2.1">
+                  <p id="section-2.2.2-2.4.2.1.1">right to have their information deleted (also referred to as the "right to be forgotten");<a href="#section-2.2.2-2.4.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-2.2.2-2.4.2.2">
+                  <p id="section-2.2.2-2.4.2.2.1">right to download their data in a readily readable format and provide their data to a different data controller;<a href="#section-2.2.2-2.4.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-2.2.2-2.4.2.3">
+                  <p id="section-2.2.2-2.4.2.3.1">right to opt out of certain data practices, such as sale of their data, profiling, targeted/cross contextual behavioral advertising, automated decision-making.<a href="#section-2.2.2-2.4.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              </ul>
+</li>
+            <li id="section-2.2.2-2.5">
+              <p id="section-2.2.2-2.5.1"><strong>Non-Discrimination</strong>: Organizations must not discriminate against individuals who choose to exercise their data privacy rights.<a href="#section-2.2.2-2.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.2-2.6">
+              <p id="section-2.2.2-2.6.1"><strong>Breach Notification</strong>: The large amounts of data held by organizations attract cyber criminals, increases the risk of data breaches.
+To mitigate the consequences of data breaches and incentivize advanced data security practices, most jurisdictions require reasonable security safeguards and prompt notification of affected individuals when breaches occur. Many regulatory bodies require notification from a data controller within 30 days of discovery. Controllers are also required to take prompt incident response measures to mitigate breaches and promptly inform and assist data subjects with breach mitigation.
+This holds organizations accountable for data security and allows individuals to take protective actions.<a href="#section-2.2.2-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-2.2.2-3">By addressing these areas, organizations can respect individual privacy rights and build trust with their customers or users.
+This approach aligns with many modern data protection regulations and best practices in privacy management.<a href="#section-2.2.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="what-data-is-protected">
+<section id="section-2.2.3">
+          <h4 id="name-what-data-is-protected">
+<a href="#section-2.2.3" class="section-number selfRef">2.2.3. </a><a href="#name-what-data-is-protected" class="section-name selfRef">What Data Is Protected?</a>
+          </h4>
+<p id="section-2.2.3-1">Data privacy laws protect personal information, though its scope can vary across different laws. In general, the term "personal information" (also known as "personally identifiable information" or "PII") includes information that makes it possible to identify an individual or information about an "identified" or "identifiable" individual. Privacy laws may further extend the scope of PII: for example, the California Privacy Rights Act's definition of PII includes information about an individual and the individual's household, as well as employment data.<a href="#section-2.2.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.2.3-2">In general, examples of PII include:<a href="#section-2.2.3-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2.3-3.1">
+              <p id="section-2.2.3-3.1.1">Basic identifiers: Name, addresses (postal and email), government-issued identification numbers<a href="#section-2.2.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.3-3.2">
+              <p id="section-2.2.3-3.2.1">Digital identifiers: IP address (in some jurisdictions like California).<a href="#section-2.2.3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.3-3.3">
+              <p id="section-2.2.3-3.3.1">Financial Data: financial account number or credit or debit card number, often in combination with any required security code or password that would permit access to a data subject’s financial account.<a href="#section-2.2.3-3.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.3-3.4">
+              <p id="section-2.2.3-3.4.1">Health data, including mental health or substance abuse information. Many healthcare identifiers are similar to other types of personal data (like names and addresses), but others may refer to specialized information like health insurance details and medical codes.<a href="#section-2.2.3-3.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.3-3.5">
+              <p id="section-2.2.3-3.5.1">Characteristics protected under various civil rights and non-discrimination laws: Race, religion, disability, sexual orientation, national origin, etc.<a href="#section-2.2.3-3.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.3-3.6">
+              <p id="section-2.2.3-3.6.1">Consumer behavior: Purchase history, product interests, consumption patterns.<a href="#section-2.2.3-3.6.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.3-3.7">
+              <p id="section-2.2.3-3.7.1">Biometric data, including voiceprints, faceprints, fingerprints.<a href="#section-2.2.3-3.7.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.3-3.8">
+              <p id="section-2.2.3-3.8.1">Online activity: Browsing and search history, website and app interaction.<a href="#section-2.2.3-3.8.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.3-3.9">
+              <p id="section-2.2.3-3.9.1">Geolocation information<a href="#section-2.2.3-3.9.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.3-3.10">
+              <p id="section-2.2.3-3.10.1">Sensory information: Audio, visual, thermal, and olfactory data.<a href="#section-2.2.3-3.10.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.3-3.11">
+              <p id="section-2.2.3-3.11.1">Professional and educational information.<a href="#section-2.2.3-3.11.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</section>
+</div>
+<div id="sensitive-data">
+<section id="section-2.2.4">
+          <h4 id="name-sensitive-data">
+<a href="#section-2.2.4" class="section-number selfRef">2.2.4. </a><a href="#name-sensitive-data" class="section-name selfRef">Sensitive Data</a>
+          </h4>
+<p id="section-2.2.4-1">An important subset of PII to consider in designing data privacy practices is so-called "sensitive data" which is subject to a higher standard of protection and requires additional privacy and security limitations to safeguard its collection, use, and disclosure. For example, it may require an opt-in consent for data collection and processing. In various jurisdictions sensitive information may include the following:<a href="#section-2.2.4-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2.4-2.1">
+              <p id="section-2.2.4-2.1.1">Government-issued identifiers.<a href="#section-2.2.4-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.4-2.2">
+              <p id="section-2.2.4-2.2.1">Physical or mental health information.<a href="#section-2.2.4-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.4-2.3">
+              <p id="section-2.2.4-2.3.1">Genetic data.<a href="#section-2.2.4-2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.4-2.4">
+              <p id="section-2.2.4-2.4.1">Financial data.<a href="#section-2.2.4-2.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.4-2.5">
+              <p id="section-2.2.4-2.5.1">Biometric information.<a href="#section-2.2.4-2.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.4-2.6">
+              <p id="section-2.2.4-2.6.1">Precise geolocation data (information on an individual’s location within a 1,850-foot radius).<a href="#section-2.2.4-2.6.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.4-2.7">
+              <p id="section-2.2.4-2.7.1">Log-in credentials – a customer’s account log-in, password, or credentials allowing access to an account.<a href="#section-2.2.4-2.7.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.4-2.8">
+              <p id="section-2.2.4-2.8.1">Citizenship and immigration status.<a href="#section-2.2.4-2.8.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.4-2.9">
+              <p id="section-2.2.4-2.9.1">Sexual behavior.<a href="#section-2.2.4-2.9.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.4-2.10">
+              <p id="section-2.2.4-2.10.1">Information revealing an individual's online activities over time and across websites or online services that do not share common branding or over time on any website or online service operated by a covered high-impact social media company.<a href="#section-2.2.4-2.10.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.4-2.11">
+              <p id="section-2.2.4-2.11.1">Information about minors (17 years of age or younger, depending on the applicable law).<a href="#section-2.2.4-2.11.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-2.2.4-2.12">
+              <p id="section-2.2.4-2.12.1">Certain communications data – an individual's private communications, such as voicemails, emails, texts, direct messages or mail, or information identifying the parties to such communications, information contained in telephone bills, voice communications, and any information that pertains to the transmission of voice communications, including numbers called, numbers from which calls were placed, the time calls were made, call duration and location information of the parties to the call, unless the covered entity is an intended recipient of the communication. Communications with businesses may be awarded less protection.<a href="#section-2.2.4-2.12.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</section>
+</div>
+<div id="what-data-is-not-protected">
+<section id="section-2.2.5">
+          <h4 id="name-what-data-is-not-protected">
+<a href="#section-2.2.5" class="section-number selfRef">2.2.5. </a><a href="#name-what-data-is-not-protected" class="section-name selfRef">What Data Is Not Protected?</a>
+          </h4>
+<p id="section-2.2.5-1">The distinction between personal and nonpersonal information hinges on identifiability, meaning that personal data is identifiable and thus protected by most privacy laws when it can be reasonably linked to a particular person (or even computer or device).
+This boundary has varying interpretations across jurisdictions.
+For instance, IP addresses are considered personal information by the EU and FTC, but not by U.S. federal agencies under the Privacy Act. Moreover, sometimes, deidentified data can be reidentified, introducing challenges to personal data protection.
+When identifying elements are removed from data, it becomes nonpersonal information, generally falling outside the scope of privacy and data protection laws.<a href="#section-2.2.5-1" class="pilcrow">¶</a></p>
+<p id="section-2.2.5-2">Some methods of transforming identifiable data into nonpersonal data are deidentification, anonymization, and aggregation.
+On the other hand, pseudonymization (replacing identifiable data with pseudonyms/unique codes) only temporarily removes identifiable data with the possibility of relatively easy reidentification.
+In many jurisdictions, pseudonymous data falls within the scope of personal data when used in conjunction with additional information that reasonably links the data to an identified or identifiable individual.<a href="#section-2.2.5-2" class="pilcrow">¶</a></p>
+<p id="section-2.2.5-3">Many jurisdictions remove <strong>publicly available information</strong> from the scope of protected PI.<a href="#section-2.2.5-3" class="pilcrow">¶</a></p>
+<p id="section-2.2.5-4"><strong>Pseudonymized data</strong>, where individuals are represented by unique codes, is temporarily nonpersonal but can be reversed to reidentify individuals.
+This reversibility can be crucial in scenarios like medical trials.
+In many jurisdictions pseudonymous data falls within the scope of personal data when used in conjunction with additional information that reasonably links the data to an identified or identifiable individual.<a href="#section-2.2.5-4" class="pilcrow">¶</a></p>
+<p id="section-2.2.5-5">Many jurisdictions remove <strong>publicly available information</strong> from the scope of protected PI.<a href="#section-2.2.5-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="deidentificationanonymization">
+<section id="section-2.2.6">
+          <h4 id="name-deidentification-anonymizat">
+<a href="#section-2.2.6" class="section-number selfRef">2.2.6. </a><a href="#name-deidentification-anonymizat" class="section-name selfRef">Deidentification/Anonymization</a>
+          </h4>
+<p id="section-2.2.6-1">Deidentification is the process of removing identifiable data from the dataset/document.
+It may take the form of information suppression (direct removal of identifying information), generalization (replacing a data element with a more general equivalent), or noise addition (slightly altering select data).
+Noise addition is the primary mechanism of differential privacy – a mathematical framework designed to ensure the privacy of individuals within a dataset while allowing for the extraction of useful statistical information by adding carefully calibrated noise to the data.
+This ensures that the inclusion or exclusion of any single individual's data does not significantly affect the outcome of the analysis and adds a level of personal data protection.
+Sometimes it is possible to reidentify the deidentified data using other available information.
+In this context, although it is often used interchangeably with the term “deidentification,” the term “anonymization” refers to the more comprehensive irreversible removal of identifiable data.
+Rigorous deidentification or anonymization techniques are highly recommended to ensure that reidentification is either impossible or extremely difficult.<a href="#section-2.2.6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="aggregationanonymization">
+<section id="section-2.2.7">
+          <h4 id="name-aggregation-anonymization">
+<a href="#section-2.2.7" class="section-number selfRef">2.2.7. </a><a href="#name-aggregation-anonymization" class="section-name selfRef">Aggregation/Anonymization</a>
+          </h4>
+<p id="section-2.2.7-1">Data aggregation and anonymization are important techniques used in the context of data privacy to protect individuals' personal information while still allowing organizations to derive valuable insights. However, these methods are not without risks and limitations.<a href="#section-2.2.7-1" class="pilcrow">¶</a></p>
+<p id="section-2.2.7-2">Data aggregation involves combining data from multiple sources or individuals into summary form. While this can obscure individual identities, there are still privacy concerns:<a href="#section-2.2.7-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.2.7-3">
+<li id="section-2.2.7-3.1">
+              <p id="section-2.2.7-3.1.1"><strong>Re-identification risk</strong>: With enough granular data points, it may be possible to single out individuals even from aggregated datasets. Applying multiple specific filters to aggregate data could potentially identify a unique individual.<a href="#section-2.2.7-3.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.7-3.2">
+              <p id="section-2.2.7-3.2.1"><strong>Inference attacks</strong>: Aggregated data can reveal patterns that allow inferences about individuals or small groups, even if direct identifiers are removed.<a href="#section-2.2.7-3.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.7-3.3">
+              <p id="section-2.2.7-3.3.1"><strong>Unintended data exposure</strong>: As aggregated data is often shared between organizations, there's increased risk of unauthorized access or misuse.<a href="#section-2.2.7-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-2.2.7-4">Anonymization aims to remove or encrypt personal identifiers from datasets. However, true anonymization is challenging:<a href="#section-2.2.7-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.2.7-5">
+<li id="section-2.2.7-5.1">
+              <p id="section-2.2.7-5.1.1"><strong>De-identification limitations</strong>: Simply removing obvious identifiers like names and addresses is often not sufficient to prevent re-identification. Indirect identifiers can still allow individuals to be singled out.<a href="#section-2.2.7-5.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.7-5.2">
+              <p id="section-2.2.7-5.2.1"><strong>Data utility trade-offs</strong>: More thorough anonymization techniques tend to reduce the usefulness of the data for analysis.<a href="#section-2.2.7-5.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.7-5.3">
+              <p id="section-2.2.7-5.3.1"><strong>Evolving re-identification techniques</strong>: As technology advances, previously anonymized data may become vulnerable to new re-identification methods.<a href="#section-2.2.7-5.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-2.2.7-6">To mitigate these risks, organizations should consider:<a href="#section-2.2.7-6" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.2.7-7">
+<li id="section-2.2.7-7.1">
+              <p id="section-2.2.7-7.1.1">Implementing robust anonymization techniques beyond basic de-identification.<a href="#section-2.2.7-7.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.7-7.2">
+              <p id="section-2.2.7-7.2.1">Carefully assessing the granularity and specificity of aggregated data released.<a href="#section-2.2.7-7.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.7-7.3">
+              <p id="section-2.2.7-7.3.1">Combining anonymization with other privacy-enhancing technologies like differential privacy.<a href="#section-2.2.7-7.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.7-7.4">
+              <p id="section-2.2.7-7.4.1">Conducting regular privacy impact assessments to evaluate potential risks.<a href="#section-2.2.7-7.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2.2.7-7.5">
+              <p id="section-2.2.7-7.5.1">Adhering to relevant privacy regulations and best practices for data handling.<a href="#section-2.2.7-7.5.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-2.2.7-8">While data aggregation and anonymization can enhance privacy protection, they should not be viewed as foolproof solutions.
+Organizations must remain vigilant and adopt a comprehensive approach to data privacy that considers the evolving nature of re-identification risks and the potential for unintended consequences when working with large datasets.<a href="#section-2.2.7-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="communications-privacy">
+<section id="section-2.3">
+        <h3 id="name-communications-privacy">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-communications-privacy" class="section-name selfRef">Communications Privacy</a>
+        </h3>
+<p id="section-2.3-1">Communications privacy is a critical concern in our increasingly interconnected world, where various forms of communication – including audio, video, text messages, and emails – have become integral to both personal and professional interactions.
+Under the applicable laws, communications are protected when in transit and at rest.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">Understanding the multifaceted legal and ethical frameworks around communications privacy is essential for anyone involved in capturing, storing, analyzing, or managing communications data.
+Communications privacy laws across various jurisdictions often share common elements, designed to protect individuals' privacy rights while balancing the needs of law enforcement and legitimate business interests.
+Here are some key provisions typically found in laws governing the recording, interception, eavesdropping, and storage of communications:<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.3-3">
+<li id="section-2.3-3.1">
+            <p id="section-2.3-3.1.1"><strong>Notice:</strong> Many laws require that parties be notified if their communications are being recorded or monitored, often through audible beeps, verbal announcements, or visible signage.
+The unauthorized surveillance or interception of an individual's private communications or activities is generally prohibited by law.<a href="#section-2.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.3-3.2">
+            <p id="section-2.3-3.2.1"><strong>Consent:</strong> Most laws stipulate that at least one party must consent to the recording or interception of a communication.
+Some jurisdictions require all parties to consent, known as "two-party" or "all-party" consent.
+The type of consent required (explicit or implied) may vary, but it has to be obtained prior to the recording.<a href="#section-2.3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.3-3.3">
+            <p id="section-2.3-3.3.1"><strong>Distinction Between Public and Private Communications:</strong> Laws often differentiate between communications where there is a reasonable expectation of privacy (e.g., private phone calls) and those in public spaces where such expectation may not exist.<a href="#section-2.3-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.3-3.4">
+            <p id="section-2.3-3.4.1"><strong>Purpose Limitations:</strong> Regulations frequently specify permissible purposes for recording or intercepting communications, such as for security, quality assurance, or with court authorization for law enforcement activities.<a href="#section-2.3-3.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.3-3.5">
+            <p id="section-2.3-3.5.1"><strong>Storage and Retention Limitations</strong>: Rules governing how long recorded communications can be stored, how they must be protected, and when they should be destroyed are common features of privacy laws.<a href="#section-2.3-3.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.3-3.6">
+            <p id="section-2.3-3.6.1"><strong>Exceptions for Law Enforcement:</strong> Most laws include provisions allowing for authorized interception of communications by law enforcement agencies, typically requiring judicial oversight through warrants or court orders.<a href="#section-2.3-3.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.3-3.7">
+            <p id="section-2.3-3.7.1"><strong>Technology-Specific Provisions</strong>: As technology evolves, laws may include specific provisions for different communication media, such as landlines, mobile phones, emails, instant messaging, video calls, and internet browsing activities.<a href="#section-2.3-3.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.3-3.8">
+            <p id="section-2.3-3.8.1"><strong>Security Measures:</strong> Requirements for securing stored communications against unauthorized access, including encryption standards and access controls, are increasingly common.
+Moreover, using encryption may in some cases absolve the data processor from legal liability or at least mitigate it.<a href="#section-2.3-3.8.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-2.3-4">Understanding these common provisions is crucial for compliance with communications privacy laws, regardless of the specific jurisdiction.
+However, it is important to note that the exact implementation and interpretation of these provisions can vary significantly between different legal frameworks.<a href="#section-2.3-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="key-privacy-principles">
+<section id="section-2.4">
+        <h3 id="name-key-privacy-principles">
+<a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-key-privacy-principles" class="section-name selfRef">Key Privacy Principles</a>
+        </h3>
+<p id="section-2.4-1">Data privacy and communications privacy are guided by similar principles, emphasizing consent, transparency, and data minimization while balancing privacy rights with societal interests.
+These areas aim to safeguard individuals' control over their personal information, whether stored or transmitted.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+<p id="section-2.4-2">Key principles include:<a href="#section-2.4-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.4-3">
+<li id="section-2.4-3.1">
+            <p id="section-2.4-3.1.1"><strong>Consent</strong>:   Organizations must usually seek individuals' consent for collecting, processing, and using their sensitive data (as defined under applicable laws) or recording private communications. When required, consent must be freely given, specific, informed, unambiguous, revocable, and documented. Consent may not be valid in situations with power imbalances and may not be required when PII processing is necessary to satisfy legal obligations or implement contracts.
+Many jurisdictions prohibit so-called "dark patterns," which are practices of seeking consent that effectively obscure, subvert, or impair the individuals' autonomy, decision-making or choice (for example, confusing user interfaces or hidden disclosures).<a href="#section-2.4-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.4-3.2">
+            <p id="section-2.4-3.2.1"><strong>Notice/Transparency</strong>: Organizations must clearly disclose their data handling practices.
+Privacy notices should be concise, transparent, and easily understandable.
+Changes to privacy practices must be promptly communicated.<a href="#section-2.4-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.4-3.3">
+            <p id="section-2.4-3.3.1"><strong>Purpose Limitation</strong>: Personal data should be collected for specific, explicit, and legitimate purposes, and it should not be used for purposes that are incompatible with those for which it was originally collected.<a href="#section-2.4-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.4-3.4">
+            <p id="section-2.4-3.4.1"><strong>Data Minimization/Collection Limitation</strong>: Organizations should collect only the minimum amount of personal data necessary to achieve the stated purpose.
+Excessive or irrelevant data should not be collected.<a href="#section-2.4-3.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.4-3.5">
+            <p id="section-2.4-3.5.1"><strong>Storage Limitation</strong>: Personal data should be retained only for as long as necessary to fulfill the purposes for which it was collected, consistent with legal limitations and requirements.
+Organizations should establish retention policies and securely dispose of data that is no longer needed.<a href="#section-2.4-3.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.4-3.6">
+            <p id="section-2.4-3.6.1"><strong>Security</strong>: Appropriate technical, physical and administrative measures must be implemented to protect covered data from unauthorized access and other risks.
+This may include encryption, access controls, and regular security assessments.<a href="#section-2.4-3.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.4-3.7">
+            <p id="section-2.4-3.7.1"><strong>Individual Rights</strong>: Individuals have certain rights regarding their personal data, including the right to access their data, the right to request corrections or deletions ("the right to be forgotten"), the right to object to certain uses of their data, and the right to data portability (the ability to transfer their data from one organization to another).<a href="#section-2.4-3.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.4-3.8">
+            <p id="section-2.4-3.8.1"><strong>Data Integrity</strong>: Personal data should be accurate, complete, up-to-date, and trustworthy throughout its lifecycle.
+The core principles of data integrity include consistency across systems, authenticity verification, and non-repudiation mechanisms.<a href="#section-2.4-3.8.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.4-3.9">
+            <p id="section-2.4-3.9.1"><strong>Accountability</strong>: Organizations are responsible for complying with data privacy laws and demonstrating compliance. Organizations are also accountable for any downstream entities with which they may share personal data for a specific defined purpose. Companies must also ensure they monitor and periodically audit third parties with which they share personal data.
+This may involve conducting privacy impact assessments, appointing a data protection officer, and maintaining records of data processing activities.<a href="#section-2.4-3.9.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.4-3.10">
+            <p id="section-2.4-3.10.1"><strong>Recordkeeping</strong>: Many laws require organizations to maintain accurate logs of consumers' profiles, data decisions, and data usage, including sales and marketing campaigns and instances of data disclosure to third parties.<a href="#section-2.4-3.10.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-2.4-4">While data privacy and communications privacy share many principles, there are some distinctions in their regulation.
+Communications privacy laws often focus more on real-time interception and communication confidentiality, while data privacy laws address a broader range of data handling practices.<a href="#section-2.4-4" class="pilcrow">¶</a></p>
+<p id="section-2.4-5">As the digital landscape evolves, privacy laws must continually adapt to address emerging technologies and practices, ensuring the protection of personal information in our interconnected world.<a href="#section-2.4-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="artificial-intelligence-specific-considerations">
+<section id="section-2.5">
+        <h3 id="name-artificial-intelligence-spe">
+<a href="#section-2.5" class="section-number selfRef">2.5. </a><a href="#name-artificial-intelligence-spe" class="section-name selfRef">Artificial Intelligence-Specific Considerations</a>
+        </h3>
+<p id="section-2.5-1">As vCons are likely to be used in the context of artificial intelligence (AI) applications and services, either directly or tangentially, additional considerations are necessary due to the nascent regulatory environment regarding AI.<a href="#section-2.5-1" class="pilcrow">¶</a></p>
+<p id="section-2.5-2">One of the most advanced regulations around AI is currently the EU AI Act. In the U.S., the Colorado AI Act contains similar principles. Various organizations, such as the National Institute of Standards and Technology (NIST), have also adopted guidance related to mitigating risks associated with AI use.<a href="#section-2.5-2" class="pilcrow">¶</a></p>
+<p id="section-2.5-3">The EU AI Act provides a comprehensive legal framework for the development, marketing, and use of AI in the EU to promote human-centric and trustworthy uses of AI while ensuring a high level of protection of health, safety and fundamental rights. The legislation adopts a risk-based approach, distinguishing between tiers of AI use cases: prohibited (such as behavioral manipulation and sensitive biometrics), high-risk (including critical infrastructure and medical devices), limited risk, and minimal risk, with each tier subject to regulatory requirements that scale from the strictest to the lightest, accordingly.<a href="#section-2.5-3" class="pilcrow">¶</a></p>
+<p id="section-2.5-4">For example, key requirements for High-Risk AI use cases under the EU AI Act include:
+ - stringent impact and conformity assessments and registration
+ - risk and quality management
+ - human oversight
+ - strong data governance practices to not only mitigate bias but also ensure adequate controls of representative data used in training as well as production applications
+ - transparency through technical documentation and instructions
+ - privacy and data governance<a href="#section-2.5-4" class="pilcrow">¶</a></p>
+<p id="section-2.5-5">As such, all of the previously discussed privacy and security measures apply to AI use cases under the EU AI Act and are supplemented with additional requirements. In particular, there is an increased emphasis on robust controls over data used for model testing and training, as well as the implementation of processes to ensure effective human oversight, including ongoing monitoring and auditing.<a href="#section-2.5-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-3">
+      <h2 id="name-security-considerations">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-3-1">vCons can contain sensitive personal and conversational data, which raises several data privacy and security concerns, particularly regarding data integrity and personal privacy.
+The following points outline the key security considerations for vCons:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3-2">
+<li id="section-3-2.1">
+          <p id="section-3-2.1.1">Data Integrity and Immutability<a href="#section-3-2.1.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.1.2.1">
+              <p id="section-3-2.1.2.1.1">vCons need to be protected against unauthorized modifications to ensure the authenticity of the conversational data.<a href="#section-3-2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-2.1.2.2">
+              <p id="section-3-2.1.2.2.1">Before a vCon leaves its original security domain, it should be digitally signed to prevent alteration, as specified in Section 5.2 (Signed Form of vCon Object).<a href="#section-3-2.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-2.2">
+          <p id="section-3-2.2.1">Privacy Protection<a href="#section-3-2.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.2.2.1">
+              <p id="section-3-2.2.2.1.1">vCons often contain personally identifiable information (PII) and sensitive data that must be safeguarded.<a href="#section-3-2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-2.2.2.2">
+              <p id="section-3-2.2.2.2.1">Different levels of redaction may be necessary, as outlined in Section 4.1.6 (redacted):<a href="#section-3-2.2.2.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.2.2.2.2.1">
+                  <p id="section-3-2.2.2.2.2.1.1">PII masking: Removing PII from text, audio, video, and transcripts.<a href="#section-3-2.2.2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-3-2.2.2.2.2.2">
+                  <p id="section-3-2.2.2.2.2.2.1">De-identification: Removing segments or whole recordings to prevent voice printing or facial recognition.<a href="#section-3-2.2.2.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              </ul>
+</li>
+          </ul>
+</li>
+        <li id="section-3-2.3">
+          <p id="section-3-2.3.1">Encrypted Storage and Transmission<a href="#section-3-2.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.3.2.1">
+              <p id="section-3-2.3.2.1.1">Unredacted versions of vCons must be encrypted to protect sensitive information, as described in Section 5.3 (Encrypted Form of vCon Object).<a href="#section-3-2.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-2.3.2.2">
+              <p id="section-3-2.3.2.2.1">vCons transmitted over non-secure channels (e.g., email) must always be in encrypted form.<a href="#section-3-2.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-2.4">
+          <p id="section-3-2.4.1">Access Control<a href="#section-3-2.4.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.4.2.1">
+              <p id="section-3-2.4.2.1.1">Externally referenced files should be transported only over HTTPS, as specified in Section 2.4 (Externally Referenced Files).<a href="#section-3-2.4.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-2.4.2.2">
+              <p id="section-3-2.4.2.2.1">Access to unredacted vCons and their referenced files should be restricted to authorized personnel only.<a href="#section-3-2.4.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-2.5">
+          <p id="section-3-2.5.1">Version Management<a href="#section-3-2.5.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.5.2.1">
+              <p id="section-3-2.5.2.1.1">Multiple versions of a vCon may exist (e.g., redacted versions, versions with added analysis).<a href="#section-3-2.5.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-2.5.2.2">
+              <p id="section-3-2.5.2.2.1">Each version must maintain its own integrity while providing a secure reference to its predecessor, as described in Sections 4.1.6 (redacted) and 4.1.7 (appended).<a href="#section-3-2.5.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-2.6">
+          <p id="section-3-2.6.1">Cross-Domain Security<a href="#section-3-2.6.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.6.2.1">
+              <p id="section-3-2.6.2.1.1">vCons may be created and modified across different security domains, as discussed in Section 4 (Unsigned Form of vCon Object).<a href="#section-3-2.6.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-2.6.2.2">
+              <p id="section-3-2.6.2.2.1">Each domain should sign the vCon before transferring it to maintain the chain of trust, using the method in Section 5.2 (Signed Form of vCon Object).<a href="#section-3-2.6.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-2.7">
+          <p id="section-3-2.7.1">Redaction Processes<a href="#section-3-2.7.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.7.2.1">
+              <p id="section-3-2.7.2.1.1">While methods exist for redacting text, audio, and video, the specific techniques are beyond the scope of the vCon standard, as noted in Section 4.1.6 (redacted).<a href="#section-3-2.7.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-2.7.2.2">
+              <p id="section-3-2.7.2.2.1">Implementers must ensure that redaction methods effectively remove sensitive information without compromising the vCon's integrity.<a href="#section-3-2.7.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-2.8">
+          <p id="section-3-2.8.1">Balancing Utility and Privacy<a href="#section-3-2.8.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.8.2.1">
+              <p id="section-3-2.8.2.1.1">There is an inherent tension between maintaining the usefulness of vCons and protecting privacy, as implied throughout Section 4 (Unsigned Form of vCon Object).<a href="#section-3-2.8.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-2.8.2.2">
+              <p id="section-3-2.8.2.2.1">Careful consideration is needed when deciding what information to redact or encrypt.<a href="#section-3-2.8.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-2.9">
+          <p id="section-3-2.9.1">Encryption of Referenced Content<a href="#section-3-2.9.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.9.2.1">
+              <p id="section-3-2.9.2.1.1">Externally referenced files that are part of a vCon should be encrypted if they contain sensitive information, as suggested in Section 2.4 (Externally Referenced Files).<a href="#section-3-2.9.2.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-2.10">
+          <p id="section-3-2.10.1">Audit Trail<a href="#section-3-2.10.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.10.2.1">
+              <p id="section-3-2.10.2.1.1">vCons should maintain a secure audit trail of modifications, especially for redactions and additions, to ensure accountability.
+This is supported by the structure described in Sections 4.1.6 (redacted) and 4.1.7 (appended).<a href="#section-3-2.10.2.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+      </ol>
+<p id="section-3-3">By addressing these security concerns and following the guidelines in the vCon standard, implementers can help ensure that vCons protect the privacy of individuals involved in conversations while maintaining the integrity and utility of the conversational data.<a href="#section-3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-4">
+      <h2 id="name-iana-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-4-1">This document has no IANA actions.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">[Warren1890] Warren, S.D. and Brandeis, L.D., "The Right to Privacy", Harvard Law Review, Vol. 4, No. 5, pp. 193-220, December 1890.<a href="#section-4-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-5">
+      <h2 id="name-references">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-5.1">
+        <h3 id="name-normative-references">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+      <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-5.2">
+        <h3 id="name-informative-references">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC3552">[RFC3552]</dt>
+        <dd>
+<span class="refAuthor">Rescorla, E.</span> and <span class="refAuthor">B. Korver</span>, <span class="refTitle">"Guidelines for Writing RFC Text on Security Considerations"</span>, <span class="seriesInfo">BCP 72</span>, <span class="seriesInfo">RFC 3552</span>, <span class="seriesInfo">DOI 10.17487/RFC3552</span>, <time datetime="2003-07" class="refDate">July 2003</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3552">https://www.rfc-editor.org/rfc/rfc3552</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6235">[RFC6235]</dt>
+        <dd>
+<span class="refAuthor">Boschi, E.</span> and <span class="refAuthor">B. Trammell</span>, <span class="refTitle">"IP Flow Anonymization Support"</span>, <span class="seriesInfo">RFC 6235</span>, <span class="seriesInfo">DOI 10.17487/RFC6235</span>, <time datetime="2011-05" class="refDate">May 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6235">https://www.rfc-editor.org/rfc/rfc6235</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6462">[RFC6462]</dt>
+        <dd>
+<span class="refAuthor">Cooper, A.</span>, <span class="refTitle">"Report from the Internet Privacy Workshop"</span>, <span class="seriesInfo">RFC 6462</span>, <span class="seriesInfo">DOI 10.17487/RFC6462</span>, <time datetime="2012-01" class="refDate">January 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6462">https://www.rfc-editor.org/rfc/rfc6462</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6973">[RFC6973]</dt>
+        <dd>
+<span class="refAuthor">Cooper, A.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Aboba, B.</span>, <span class="refAuthor">Peterson, J.</span>, <span class="refAuthor">Morris, J.</span>, <span class="refAuthor">Hansen, M.</span>, and <span class="refAuthor">R. Smith</span>, <span class="refTitle">"Privacy Considerations for Internet Protocols"</span>, <span class="seriesInfo">RFC 6973</span>, <span class="seriesInfo">DOI 10.17487/RFC6973</span>, <time datetime="2013-07" class="refDate">July 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6973">https://www.rfc-editor.org/rfc/rfc6973</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7011">[RFC7011]</dt>
+        <dd>
+<span class="refAuthor">Claise, B., Ed.</span>, <span class="refAuthor">Trammell, B., Ed.</span>, and <span class="refAuthor">P. Aitken</span>, <span class="refTitle">"Specification of the IP Flow Information Export (IPFIX) Protocol for the Exchange of Flow Information"</span>, <span class="seriesInfo">STD 77</span>, <span class="seriesInfo">RFC 7011</span>, <span class="seriesInfo">DOI 10.17487/RFC7011</span>, <time datetime="2013-09" class="refDate">September 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7011">https://www.rfc-editor.org/rfc/rfc7011</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7258">[RFC7258]</dt>
+        <dd>
+<span class="refAuthor">Farrell, S.</span> and <span class="refAuthor">H. Tschofenig</span>, <span class="refTitle">"Pervasive Monitoring Is an Attack"</span>, <span class="seriesInfo">BCP 188</span>, <span class="seriesInfo">RFC 7258</span>, <span class="seriesInfo">DOI 10.17487/RFC7258</span>, <time datetime="2014-05" class="refDate">May 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7258">https://www.rfc-editor.org/rfc/rfc7258</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7624">[RFC7624]</dt>
+        <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Schneier, B.</span>, <span class="refAuthor">Jennings, C.</span>, <span class="refAuthor">Hardie, T.</span>, <span class="refAuthor">Trammell, B.</span>, <span class="refAuthor">Huitema, C.</span>, and <span class="refAuthor">D. Borkmann</span>, <span class="refTitle">"Confidentiality in the Face of Pervasive Surveillance: A Threat Model and Problem Statement"</span>, <span class="seriesInfo">RFC 7624</span>, <span class="seriesInfo">DOI 10.17487/RFC7624</span>, <time datetime="2015-08" class="refDate">August 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7624">https://www.rfc-editor.org/rfc/rfc7624</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7844">[RFC7844]</dt>
+        <dd>
+<span class="refAuthor">Huitema, C.</span>, <span class="refAuthor">Mrugalski, T.</span>, and <span class="refAuthor">S. Krishnan</span>, <span class="refTitle">"Anonymity Profiles for DHCP Clients"</span>, <span class="seriesInfo">RFC 7844</span>, <span class="seriesInfo">DOI 10.17487/RFC7844</span>, <time datetime="2016-05" class="refDate">May 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7844">https://www.rfc-editor.org/rfc/rfc7844</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7858">[RFC7858]</dt>
+        <dd>
+<span class="refAuthor">Hu, Z.</span>, <span class="refAuthor">Zhu, L.</span>, <span class="refAuthor">Heidemann, J.</span>, <span class="refAuthor">Mankin, A.</span>, <span class="refAuthor">Wessels, D.</span>, and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"Specification for DNS over Transport Layer Security (TLS)"</span>, <span class="seriesInfo">RFC 7858</span>, <span class="seriesInfo">DOI 10.17487/RFC7858</span>, <time datetime="2016-05" class="refDate">May 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7858">https://www.rfc-editor.org/rfc/rfc7858</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8165">[RFC8165]</dt>
+        <dd>
+<span class="refAuthor">Hardie, T.</span>, <span class="refTitle">"Design Considerations for Metadata Insertion"</span>, <span class="seriesInfo">RFC 8165</span>, <span class="seriesInfo">DOI 10.17487/RFC8165</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8165">https://www.rfc-editor.org/rfc/rfc8165</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8280">[RFC8280]</dt>
+        <dd>
+<span class="refAuthor">ten Oever, N.</span> and <span class="refAuthor">C. Cath</span>, <span class="refTitle">"Research into Human Rights Protocol Considerations"</span>, <span class="seriesInfo">RFC 8280</span>, <span class="seriesInfo">DOI 10.17487/RFC8280</span>, <time datetime="2017-10" class="refDate">October 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8280">https://www.rfc-editor.org/rfc/rfc8280</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8446">[RFC8446]</dt>
+      <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8446">https://www.rfc-editor.org/rfc/rfc8446</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="appendix-A">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<ul class="normal">
+<li class="normal" id="appendix-A-1.1">
+          <p id="appendix-A-1.1.1">Thank you to Andy Newton for his review, suggestions and improvements<a href="#appendix-A-1.1.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Diana James</span></div>
+<div dir="auto" class="left"><span class="org">Marashlian &amp; Donahue, PLLC</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:daj@commlawgroup.com" class="email">daj@commlawgroup.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Thomas McCarthy-Howe</span></div>
+<div dir="auto" class="left"><span class="org">Strolid</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:thomas.howe@strolid.com" class="email">thomas.howe@strolid.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
