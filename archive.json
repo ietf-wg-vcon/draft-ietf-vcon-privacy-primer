@@ -1,0 +1,109 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2025-07-22T00:49:29.507586+00:00",
+  "repo": "ietf-wg-vcon/draft-ietf-vcon-privacy-primer",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOOyPtbM6fvH-r",
+      "title": "Updated with recent changes and document renaming.",
+      "url": "https://github.com/ietf-wg-vcon/draft-ietf-vcon-privacy-primer/pull/1",
+      "state": "CLOSED",
+      "author": "howethomas",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-07-20T13:59:52Z",
+      "updatedAt": "2025-07-20T14:02:35Z",
+      "baseRepository": "ietf-wg-vcon/draft-ietf-vcon-privacy-primer",
+      "baseRefName": "main",
+      "baseRefOid": "3eb810dbec0f0595bc2a9a9fd03c33d19fe2285a",
+      "headRepository": "vcon-dev/draft-ietf-vcon-privacy-primer",
+      "headRefName": "main",
+      "headRefOid": "bb9db5304d66f143309950c488ed18405a887d36",
+      "closedAt": "2025-07-20T14:02:35Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOOyPtbM6fvJhx",
+      "title": "Updates document, copy and github actions.",
+      "url": "https://github.com/ietf-wg-vcon/draft-ietf-vcon-privacy-primer/pull/2",
+      "state": "MERGED",
+      "author": "howethomas",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-07-20T14:05:05Z",
+      "updatedAt": "2025-07-20T14:05:13Z",
+      "baseRepository": "ietf-wg-vcon/draft-ietf-vcon-privacy-primer",
+      "baseRefName": "main",
+      "baseRefOid": "3eb810dbec0f0595bc2a9a9fd03c33d19fe2285a",
+      "headRepository": "vcon-dev/draft-ietf-vcon-privacy-primer",
+      "headRefName": "main",
+      "headRefOid": "bb9db5304d66f143309950c488ed18405a887d36",
+      "closedAt": "2025-07-20T14:05:13Z",
+      "mergedAt": "2025-07-20T14:05:13Z",
+      "mergedBy": "howethomas",
+      "mergeCommit": {
+        "oid": "f4ccb9ad9e24139094179692df3ac3564a4a1b84"
+      },
+      "comments": [],
+      "reviews": []
+    }
+  ]
+}
